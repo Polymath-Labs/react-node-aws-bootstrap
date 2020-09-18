@@ -1,0 +1,37 @@
+service:
+  name: polymathlabs-ops
+
+plugins:
+  - serverless-plugin-split-stacks
+  - serverless-dotenv-plugin
+  - serverless-s3-remover
+
+provider:
+  name: aws
+  runtime: nodejs12.x
+  region: ${env:REGION, 'us-east-1'}
+  stage: ${env:STAGE, 'dev'}
+  # uncomment and set profile if you have multiple aws profiles, otherwise it uses default one
+#  profile: yourProfile
+  role: LambdaRole
+
+custom:
+  config:
+    documentDBInstanceClass: "db.t3.medium"
+
+  remover:
+    prompt: true
+    buckets:
+      - ${env:PROJECT_NAME}-deployment-bucket-${self:provider.stage}
+      - ${env:PROJECT_NAME}-ui-${self:provider.stage}
+
+functions:
+
+resources:
+  - ${file(./resources/cloudfront.yml)}
+  - ${file(./resources/codebuild.yml)}
+  - ${file(./resources/codepipeline.yml)}
+  - ${file(./resources/documentDB.yml)}
+  - ${file(./resources/iam.yml)}
+  - ${file(./resources/s3.yml)}
+  - ${file(./resources/vpc.yml)}

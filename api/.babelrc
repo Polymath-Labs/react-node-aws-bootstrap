@@ -1,0 +1,25 @@
+{
+  "plugins": [
+		"@babel/plugin-transform-modules-commonjs",
+		"@babel/plugin-proposal-optional-chaining",
+		"@babel/plugin-transform-runtime",
+		"@babel/plugin-proposal-class-properties",
+		"@babel/plugin-proposal-private-methods",
+		"babel-plugin-source-map-support",
+		["module-resolver", {
+			"root": ["./"],
+			"alias": {
+				"@api": "./src/",
+				"@routes": "./src/routes",
+				"@services": "./src/services",
+				"@repositories": "./src/repositories",
+				"@utils": "./src/utils"
+			}
+		}]
+	],
+	"ignore": [
+		"node_modules",
+		"lambda-layers"
+	],
+  "presets": ["@babel/preset-flow"]
+}

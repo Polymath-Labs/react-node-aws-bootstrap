@@ -1,0 +1,31 @@
+version: 0.2
+
+phases:
+  install:
+    runtime-versions:
+      nodejs: 12
+    commands:
+      - echo Process started on `date`
+      - printenv
+
+  pre_build:
+    commands:
+      # Install npm dependencies.
+      - cd ${CODEBUILD_SRC_DIR}/web
+      - npm install
+
+  build:
+    commands:
+      - cd ${CODEBUILD_SRC_DIR}/web
+      - npm run build
+
+  post_build:
+    commands:
+#      - post build command
+
+artifacts:
+  files:
+    - '**/*'
+  name: web-artifact
+  discard-paths: no
+  base-directory: ${CODEBUILD_SRC_DIR}/web/build

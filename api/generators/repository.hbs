@@ -1,0 +1,66 @@
+// @flow
+import { ObjectId } from 'mongodb';
+import BaseRepository from '@repositories/base-repository';
+import { {{constantCase name}}_COLLECTION_NAME, {{capitalize name}}Model } from '@models/{{capitalize name}}Model';
+import type { Create{{capitalize name}}Request, Update{{capitalize name}}Request } from '@models/requests/{{capitalize name}}.requests';
+import Logger from '@utils/logger';
+
+const logger = new Logger('{{capitalize name}}Repository');
+
+class {{capitalize name}}Repository extends BaseRepository {
+
+	async fetch(): Promise<{{capitalize name}}Model[]> {
+		const client = await this.getMongoClient();
+		return client.collection({{constantCase name}}_COLLECTION_NAME).find({ isDeleted: { $ne: true } }).toArray();
+	}
+
+	async get({{name}}ID: string): Promise<{{capitalize name}}Model> {
+		const client = await this.getMongoClient();
+		return client.collection({{constantCase name}}_COLLECTION_NAME).findOne({ _id: new ObjectId({{name}}ID), isDeleted: { $ne: true } });
+	}
+
+	async create(payload: Create{{capitalize name}}Request): Promise<{ _id: string }> {
+		const client = await this.getMongoClient();
+		const response = await client.collection({{constantCase name}}_COLLECTION_NAME).insertOne(payload);
+		logger.info('{{capitalize name}} created');
+
+		return response.insertedId;
+	}
+
+	async update({{name}}ID: string, payload: Update{{capitalize name}}Request): Promise<{{capitalize name}}Model> {
+		const client = await this.getMongoClient();
+		const query = {
+			_id: new ObjectId({{name}}ID)
+		};
+
+		if (!global['isFromEvent'] && payload.version) {
+			const version = payload.version;
+			delete payload.version;
+			query.version = version;
+		}
+
+		await client.collection({{constantCase name}}_COLLECTION_NAME)
+		.updateOne(
+			query,
+			{
+				$set: { ...payload },
+				$inc: { version: 1 }
+			},
+		);
+
+		return client.collection({{constantCase name}}_COLLECTION_NAME).findOne({ _id: new ObjectId({{name}}ID) });
+	}
+
+	async delete(id: string) {
+		const client = await this.getMongoClient();
+		logger.info('Deleting {{name}}');
+		return client.collection({{constantCase name}}_COLLECTION_NAME).updateOne({ _id: new ObjectId(id) }, {
+			$set: {
+				isDeleted: true,
+				deletedAt: new Date().getTime(),
+				},
+			$inc: { version: 1 }
+		});
+	}
+}
+export default new {{capitalize name}}Repository();

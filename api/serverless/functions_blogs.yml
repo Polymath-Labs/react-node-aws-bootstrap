@@ -1,0 +1,44 @@
+fetchBlogs:
+  handler: src/index.handler
+  events:
+    - http:
+        path: /blogs
+        method: get
+        cors: ${self:custom.config.cors}
+  vpc: ${self:custom.config.vpc}
+
+getBlog:
+  handler: src/index.handler
+  events:
+    - http:
+        path: blogs/{blogID}
+        method: get
+        cors: ${self:custom.config.cors}
+  vpc: ${self:custom.config.vpc}
+
+createBlog:
+  handler: src/index.handler
+  events:
+    - http:
+        path: /blogs
+        method: post
+        cors: ${self:custom.config.cors}
+  vpc: ${self:custom.config.vpc}
+
+updateBlog:
+  handler: src/index.handler
+  events:
+    - http:
+        path: blogs/{blogID}
+        method: patch
+        cors: ${self:custom.config.cors}
+  vpc: ${self:custom.config.vpc}
+
+deleteBlog:
+  handler: src/index.handler
+  events:
+    - http:
+        path: blogs/{blogID}
+        method: delete
+        cors: ${self:custom.config.cors}
+  vpc: ${self:custom.config.vpc}

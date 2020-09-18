@@ -1,0 +1,63 @@
+Resources:
+  DBCluster:
+    Type: AWS::DocDB::DBCluster
+    DeletionPolicy: Delete # change to Retain
+    Properties:
+      BackupRetentionPeriod: 1
+      DBClusterIdentifier: ${env:PROJECT_NAME}-${self:provider.stage}
+      DBClusterParameterGroupName: ${env:PROJECT_NAME}${self:provider.stage}-parameter-group
+      DeletionProtection: false # change to true
+      DBSubnetGroupName: ${env:PROJECT_NAME}-${self:provider.stage}-subnet
+      VpcSecurityGroupIds:
+        - !Ref VPCSecurityGroup
+      MasterUsername:
+        !Join ['', ['{{resolve:secretsmanager:', '${env:AWS_SECRET_NAME}', ':SecretString:DocumentDBUsername}}']]
+      MasterUserPassword:
+        !Join ['', ['{{resolve:secretsmanager:', '${env:AWS_SECRET_NAME}', ':SecretString:DocumentDBPassword}}']]
+
+    DependsOn:
+      - DBParameterGroup
+      - DBClusterSubnet
+      - VPCSecurityGroup
+
+  DBParameterGroup:
+    Type: AWS::DocDB::DBClusterParameterGroup
+    Properties:
+      Description: ${env:PROJECT_NAME}-${self:provider.stage} parameter group
+      Family: "docdb3.6"
+      Name: ${env:PROJECT_NAME}${self:provider.stage}-parameter-group
+      Parameters:
+        tls: "disabled"
+
+  DBInstance:
+    Type: AWS::DocDB::DBInstance
+    Properties:
+      DBClusterIdentifier: ${env:PROJECT_NAME}-${self:provider.stage}
+      DBInstanceIdentifier: ${env:PROJECT_NAME}-${self:provider.stage}-instance-1
+      DBInstanceClass: ${self:custom.config.documentDBInstanceClass}
+    DependsOn: DBCluster
+
+  DBClusterSubnet:
+    Type: AWS::DocDB::DBSubnetGroup
+    Properties:
+      DBSubnetGroupDescription: ${env:PROJECT_NAME}-${self:provider.stage} subnet group
+      DBSubnetGroupName: ${env:PROJECT_NAME}-${self:provider.stage}-subnet
+      SubnetIds:
+        - !Ref Subnet1
+        - !Ref Subnet2
+        - !Ref Subnet3
+    DependsOn:
+      - Subnet1
+      - Subnet2
+      - Subnet3
+
+Outputs:
+  DocumentDBEndpoint:
+    Value: !GetAtt [DBCluster, Endpoint]
+    Export:
+      Name: ${env:PROJECT_NAME}-documentDB-endpoint-${self:provider.stage}
+
+  DocumentDBPort:
+    Value: !GetAtt [DBCluster, Port]
+    Export:
+      Name: ${env:PROJECT_NAME}-documentDB-port-${self:provider.stage}

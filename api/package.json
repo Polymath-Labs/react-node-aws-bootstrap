@@ -1,0 +1,87 @@
+{
+	"name": "polymathlabs-api",
+	"version": "1.0.0",
+	"description": "Serverless api bootstrapped by polymathlabs",
+	"scripts": {
+		"start": "env NODE_ENV=local sls offline start --watch --webpack-use-polling --isLocal=true -s dev",
+		"pack": "sls webpack --isLocal=false",
+		"deploy": "sls deploy",
+		"test": "env NODE_ENV=test mocha --reporter spec ./tests/setup.test.js* ./tests/**/*.test.js* --require @babel/register",
+		"generate": "./node_modules/plop/bin/plop.js",
+		"generate:doc": "swagger-jsdoc -d swagger/swaggerDef.js -o swagger/public/swagger.json",
+		"swagger": "swagger-jsdoc -d swagger/swaggerDef.js -o swagger/public/swagger.json && node swagger/server.js"
+	},
+	"devDependencies": {
+		"@babel/cli": "^7.10.1",
+		"@babel/core": "^7.10.2",
+		"@babel/plugin-proposal-class-properties": "^7.10.1",
+		"@babel/plugin-proposal-optional-chaining": "^7.10.1",
+		"@babel/plugin-proposal-private-methods": "^7.10.1",
+		"@babel/plugin-transform-modules-commonjs": "^7.10.1",
+		"@babel/plugin-transform-runtime": "^7.10.1",
+		"@babel/preset-env": "^7.10.2",
+		"@babel/preset-flow": "^7.10.1",
+		"@babel/register": "^7.10.1",
+		"aws-sdk": "^2.693.0",
+		"babel-core": "^6.26.3",
+		"babel-eslint": "^11.0.0-beta.2",
+		"babel-loader": "^8.1.0",
+		"babel-plugin-module-resolver": "^4.0.0",
+		"babel-plugin-transform-runtime": "^6.23.0",
+		"babel-polyfill": "^6.23.0",
+		"babel-preset-env": "^1.6.0",
+		"chai": "^4.2.0",
+		"copy-webpack-plugin": "^5.1.1",
+		"eslint": "^7.9.0",
+		"eslint-loader": "^4.0.2",
+		"eslint-plugin-promise": "^4.2.1",
+		"eslint-plugin-sonarjs": "^0.5.0",
+		"flow-bin": "^0.123.0",
+		"husky": "^4.2.5",
+		"lint-staged": "^10.2.9",
+		"mocha": "^6.2.2",
+		"mocha-prepare": "^0.1.0",
+		"mongo-unit": "^2.0.1",
+		"plop": "^2.7.1",
+		"proxyquire": "^2.1.3",
+		"serverless": "^1.82.0",
+		"serverless-dotenv-plugin": "^3.0.0",
+		"serverless-offline": "^6.7.0",
+		"serverless-plugin-split-stacks": "^1.9.3",
+		"serverless-webpack": "^5.3.4",
+		"sinon": "^7.5.0",
+		"supertest": "^4.0.2",
+		"swagger-jsdoc": "^4.0.0",
+		"swagger-ui-express": "^4.1.4",
+		"webpack": "^4.43.0",
+		"webpack-node-externals": "^1.7.2"
+	},
+	"author": "Polymathlabs",
+	"license": "MIT",
+	"dependencies": {
+		"@babel/runtime": "^7.10.2",
+		"ajv": "^6.12.2",
+		"aws-serverless-express": "^3.3.8",
+		"axios": "^0.19.2",
+		"babel-plugin-source-map-support": "^2.1.2",
+		"mongodb": "^3.5.8",
+		"mongodb-client-encryption": "^1.0.1",
+		"body-parser": "^1.19.0",
+		"cors": "^2.8.5",
+		"express": "^4.17.1",
+		"lodash": "^4.17.15",
+		"pluralize": "^8.0.0",
+		"serverless-http": "^2.5.0"
+	},
+	"lint-staged": {
+		"**.{js,jsx,ts,tsx}": [
+			"eslint --fix"
+		]
+	},
+	"husky": {
+		"hooks": {
+			"pre-commit": "lint-staged",
+			"pre-push": "npm run test"
+		}
+	}
+}

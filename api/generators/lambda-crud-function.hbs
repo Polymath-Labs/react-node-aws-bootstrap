@@ -1,0 +1,44 @@
+fetch{{capitalize (pluralize name)}}:
+  handler: src/index.handler
+  events:
+    - http:
+        path: /{{pluralize name}}
+        method: get
+        cors: ${self:custom.config.cors}
+  vpc: ${self:custom.config.vpc}
+
+get{{capitalize name}}:
+  handler: src/index.handler
+  events:
+    - http:
+        path: {{pluralize name}}/{{openCurlyBrace}}{{name}}ID}
+        method: get
+        cors: ${self:custom.config.cors}
+  vpc: ${self:custom.config.vpc}
+
+create{{capitalize name}}:
+  handler: src/index.handler
+  events:
+    - http:
+        path: /{{pluralize name}}
+        method: post
+        cors: ${self:custom.config.cors}
+  vpc: ${self:custom.config.vpc}
+
+update{{capitalize name}}:
+  handler: src/index.handler
+  events:
+    - http:
+        path: {{pluralize name}}/{{openCurlyBrace}}{{name}}ID}
+        method: patch
+        cors: ${self:custom.config.cors}
+  vpc: ${self:custom.config.vpc}
+
+delete{{capitalize name}}:
+  handler: src/index.handler
+  events:
+    - http:
+        path: {{pluralize name}}/{{openCurlyBrace}}{{name}}ID}
+        method: delete
+        cors: ${self:custom.config.cors}
+  vpc: ${self:custom.config.vpc}

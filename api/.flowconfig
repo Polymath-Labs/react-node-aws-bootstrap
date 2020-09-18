@@ -1,0 +1,22 @@
+[ignore]
+node_modules
+.serverless
+.webpack
+
+[include]
+
+[libs]
+
+[lints]
+
+[options]
+esproposal.optional_chaining=enable
+module.name_mapper='^@repositories' ->'<PROJECT_ROOT>/src/repositories/'
+module.name_mapper='^@exceptions' ->'<PROJECT_ROOT>/src/exceptions/'
+module.name_mapper='^@services' ->'<PROJECT_ROOT>/src/services/'
+module.name_mapper='^@routes' ->'<PROJECT_ROOT>/src/routes/'
+module.name_mapper='^@models' ->'<PROJECT_ROOT>/src/models/'
+module.name_mapper='^@utils' ->'<PROJECT_ROOT>/src/utils/'
+module.name_mapper='^@api' ->'<PROJECT_ROOT>/src/'
+
+[strict]

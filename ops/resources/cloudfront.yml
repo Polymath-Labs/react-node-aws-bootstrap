@@ -1,0 +1,52 @@
+Resources:
+  Distribution:
+    Type: AWS::CloudFront::Distribution
+    Properties:
+      DistributionConfig:
+        Origins:
+          -
+            DomainName: !GetAtt WebApp.DomainName
+            Id: !Ref WebApp
+            CustomOriginConfig:
+              HTTPPort: 80
+              HTTPSPort: 443
+              OriginProtocolPolicy: match-viewer
+        Enabled: true
+        DefaultRootObject: index.html
+        CustomErrorResponses:
+          - ErrorCode: 404
+            ResponseCode: 200
+            ResponsePagePath: /index.html
+          - ErrorCode: 403
+            ResponseCode: 200
+            ResponsePagePath: /index.html
+        DefaultCacheBehavior:
+          AllowedMethods:
+            - DELETE
+            - GET
+            - HEAD
+            - OPTIONS
+            - PATCH
+            - POST
+            - PUT
+          MinTTL: 86400
+          MaxTTL: 31536000
+          ForwardedValues:
+            QueryString: true
+            Cookies:
+              Forward: none
+          TargetOriginId: !Ref WebApp
+          ViewerProtocolPolicy: "redirect-to-https"
+        ViewerCertificate:
+          CloudFrontDefaultCertificate: 'true'
+
+Outputs:
+  UICloudFrontDomainName:
+    Value: !GetAtt [Distribution, DomainName]
+    Export:
+      Name: ui-cloudfront-domain-${self:provider.stage}
+
+  UICloudFrontID:
+    Value: !Ref Distribution
+    Export:
+      Name: ui-cloudfront-id-${self:provider.stage}

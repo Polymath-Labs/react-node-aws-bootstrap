@@ -1,0 +1,133 @@
+Resources:
+  CodePipeline:
+    Type: AWS::CodePipeline::Pipeline
+    DependsOn:
+      - AppVPC
+      - Subnet1
+      - Subnet2
+      - Subnet3
+      - VPCSecurityGroup
+    Properties:
+      Name: ${env:PROJECT_NAME}-ui-${self:provider.stage}
+      RoleArn: !GetAtt CodePipeLineRole.Arn
+      ArtifactStore:
+        Location: !Ref PipelineBucket
+        Type: S3
+      Stages:
+        -
+          Name: Source
+          Actions:
+            -
+              Name: SourceAction
+              ActionTypeId:
+                Category: Source
+                Owner: ThirdParty
+                Provider: GitHub
+                Version: 1
+              OutputArtifacts:
+                -
+                  Name: UIWebArtifactName
+              Configuration:
+                Owner:
+                  !Join ['', ['{{resolve:secretsmanager:', '${env:AWS_SECRET_NAME}', ':SecretString:SourceRepoOwner}}']]
+                Repo:
+                  !Join ['', ['{{resolve:secretsmanager:', '${env:AWS_SECRET_NAME}', ':SecretString:SourceRepoName}}']]
+                Branch:
+                  !Join ['', ['{{resolve:secretsmanager:', '${env:AWS_SECRET_NAME}', ':SecretString:SourceRepoBranch}}']]
+                OAuthToken:
+                  !Join ['', ['{{resolve:secretsmanager:', '${env:AWS_SECRET_NAME}', ':SecretString:GitHubPersonalAccessToken}}']]
+        -
+          Name: Build
+          Actions:
+            -
+              Name: BuildAction
+              ActionTypeId:
+                Category: Build
+                Owner: AWS
+                Version: 1
+                Provider: CodeBuild
+              InputArtifacts:
+                -
+                  Name: UIWebArtifactName
+              OutputArtifacts:
+                -
+                  Name: UIWebArtifact
+              Configuration:
+                ProjectName: !Ref UICodeBuild
+        -
+          Name: Deploy
+          Actions:
+            -
+              Name: DeployAction
+              ActionTypeId:
+                Category: Deploy
+                Owner: AWS
+                Provider: S3
+                Version: 1
+              Configuration:
+                BucketName: !Ref WebApp
+                Extract: true
+              InputArtifacts:
+                -
+                  Name: UIWebArtifact
+
+  ApiCodePipeline:
+    Type: AWS::CodePipeline::Pipeline
+    DependsOn:
+      - AppVPC
+      - Subnet1
+      - Subnet2
+      - Subnet3
+      - VPCSecurityGroup
+    Properties:
+      Name: ${env:PROJECT_NAME}-api-${self:provider.stage}
+      RoleArn: !GetAtt CodePipeLineRole.Arn
+      ArtifactStore:
+        Location: !Ref PipelineBucket
+        Type: S3
+      Stages:
+        -
+          Name: Source
+          Actions:
+            -
+              Name: SourceAction
+              ActionTypeId:
+                Category: Source
+                Owner: ThirdParty
+                Provider: GitHub
+                Version: 1
+              OutputArtifacts:
+                -
+                  Name: ApiArtifactName
+              Configuration:
+                Owner:
+                  !Join ['', ['{{resolve:secretsmanager:', '${env:AWS_SECRET_NAME}', ':SecretString:SourceRepoOwner}}']]
+                Repo:
+                  !Join ['', ['{{resolve:secretsmanager:', '${env:AWS_SECRET_NAME}', ':SecretString:SourceRepoName}}']]
+                Branch:
+                  !Join ['', ['{{resolve:secretsmanager:', '${env:AWS_SECRET_NAME}', ':SecretString:SourceRepoBranch}}']]
+                OAuthToken:
+                  !Join ['', ['{{resolve:secretsmanager:', '${env:AWS_SECRET_NAME}', ':SecretString:GitHubPersonalAccessToken}}']]
+        -
+          Name: Build
+          Actions:
+            -
+              Name: BuildAction
+              ActionTypeId:
+                Category: Build
+                Owner: AWS
+                Version: 1
+                Provider: CodeBuild
+              InputArtifacts:
+                -
+                  Name: ApiArtifactName
+              OutputArtifacts:
+                -
+                  Name: ApiArtifact
+              Configuration:
+                ProjectName: !Ref ApiCodeBuild
+
+  # Temp bucket for storing build artifacts
+  PipelineBucket:
+    Type: 'AWS::S3::Bucket'
+    Properties: {}

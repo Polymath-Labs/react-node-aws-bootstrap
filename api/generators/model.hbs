@@ -1,0 +1,20 @@
+// @flow
+import { BaseModel } from './BaseModel';
+
+export const {{constantCase name}}_COLLECTION_NAME = '{{pluralize name}}';
+/**
+ * {{capitalize name}} collection
+ *
+ * @swagger
+ *
+ * definitions:
+ *   {{capitalize name}}Model:
+ *     allOf:
+ *       - $ref: '#/definitions/BaseModel'
+ *       - required:
+ *         - _id
+ *         - version
+ */
+export interface {{capitalize name}}Model extends BaseModel {
+
+}

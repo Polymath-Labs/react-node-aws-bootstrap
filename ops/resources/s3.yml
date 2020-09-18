@@ -1,0 +1,37 @@
+Resources:
+  WebApp:
+    Type: AWS::S3::Bucket
+    Properties:
+      BucketName: ${env:PROJECT_NAME}-ui-${self:provider.stage}
+      WebsiteConfiguration:
+        ErrorDocument: index.html
+        IndexDocument: index.html
+
+  S3BucketPolicy:
+    Type: "AWS::S3::BucketPolicy"
+    DependsOn:
+      - WebApp
+    Properties:
+      Bucket: ${env:PROJECT_NAME}-ui-${self:provider.stage}
+      PolicyDocument:
+        Version: "2008-10-17"
+        Id: "PolicyForCloudFrontPrivateContent"
+        Statement:
+          - Sid: "PublicRead"
+            Effect: "Allow"
+            Principal: "*"
+            Action:
+              - "s3:GetObject"
+              - "s3:GetObjectVersion"
+            Resource: !Join ['', ['arn:aws:s3:::', '${env:PROJECT_NAME}-ui-${self:provider.stage}', "/*"]]
+
+Outputs:
+  WebAppUrl:
+    Value: !GetAtt [WebApp, WebsiteURL]
+    Export:
+      Name: web-app-url-${self:provider.stage}
+
+  WebAppBucketKey:
+    Value: !Ref WebApp
+    Export:
+      Name: web-app-bucket-key-${self:provider.stage}

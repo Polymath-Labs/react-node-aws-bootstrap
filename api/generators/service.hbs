@@ -1,0 +1,64 @@
+// @flow
+import type { {{capitalize name}}Model } from '@models/{{capitalize name}}Model';
+import type { Create{{capitalize name}}Request, Update{{capitalize name}}Request } from '@models/requests/{{capitalize name}}.requests';
+import Logger from '@utils/logger';
+import {{name}}Repository from '@repositories/{{name}}-repository';
+import { DatabaseHelper } from '@utils/database-helper';
+// eslint-disable-next-line no-unused-vars
+import Exception from '@exceptions/exception';
+
+const logger = new Logger('{{capitalize name}}Service');
+
+class {{capitalize name}}Service {
+
+	// eslint-disable-next-line no-undef
+	static async #exist({{name}}ID: string) {
+		const {{name}} = await {{name}}Repository.get({{name}}ID);
+		if (!{{name}}) {
+			logger.error(`{{capitalize name}} with id: ${{openCurlyBrace}}{{name}}ID} does not exist`);
+			throw new Exception(404, '{{capitalize name}} not found');
+		} else {
+			logger.info(`Found {{name}} with id: ${{openCurlyBrace}}{{name}}ID}`);
+		}
+	}
+
+	fetch(): Promise<{{capitalize name}}Model[]> {
+		logger.info('Getting {{capitalize (pluralize name)}}');
+		return {{name}}Repository.fetch();
+	}
+
+	get({{name}}ID: string): Promise<{{capitalize name}}Model> {
+		logger.info('Getting  {{name}}');
+		logger.debug('Getting  {{name}} with ID:', {{name}}ID);
+		return {{name}}Repository.get({{name}}ID);
+	}
+
+	async create(payload: Create{{capitalize name}}Request): Promise<{{capitalize name}}Model> {
+		logger.info('Creating {{name}}');
+		logger.debug('Creating {{name}} with payload: ', payload);
+		DatabaseHelper.SetModified(payload);
+		const {{name}}: {{capitalize name}}Model = payload;
+		{{name}}._id = await {{name}}Repository.create(payload);
+
+		return {{name}};
+	}
+
+	async patch({{name}}ID: string, payload: Update{{capitalize name}}Request): Promise<{{capitalize name}}Model> {
+		await {{capitalize name}}Service.#exist({{name}}ID);
+		logger.info('Updating {{name}}');
+		DatabaseHelper.SetModified(payload);
+
+		await {{name}}Repository.update({{name}}ID, payload);
+		return this.get({{name}}ID);
+	}
+
+	async delete({{name}}ID: string): Promise<boolean> {
+		await {{capitalize name}}Service.#exist({{name}}ID);
+		logger.info('Deleting {{name}}');
+		await {{name}}Repository.delete({{name}}ID);
+
+		return true;
+	}
+}
+
+export default new {{capitalize name}}Service();

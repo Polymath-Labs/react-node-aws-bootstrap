@@ -1,0 +1,58 @@
+Resources:
+  UICodeBuild:
+    Type: AWS::CodeBuild::Project
+    Properties:
+      Name: ${env:PROJECT_NAME}-ui-${self:provider.stage}
+      ServiceRole: !GetAtt CodeBuildRole.Arn
+      Artifacts:
+        Type: CODEPIPELINE
+        Name: ReactUIProject
+      Environment:
+        ComputeType: BUILD_GENERAL1_SMALL
+        Type: LINUX_CONTAINER
+        Image: 'aws/codebuild/standard:4.0'
+        EnvironmentVariables:
+          - Name: REGION
+            Type: PLAINTEXT
+            Value: ${env:REGION}
+          - Name: PROJECT_NAME
+            Type: PLAINTEXT
+            Value: ${env:PROJECT_NAME}
+          - Name: AWS_SECRET_NAME
+            Type: PLAINTEXT
+            Value: ${env:AWS_SECRET_NAME}
+          - Name: STAGE
+            Type: PLAINTEXT
+            Value: ${self:provider.stage}
+      Source:
+        Type: CODEPIPELINE
+        BuildSpec: "./web/buildspec.yml"
+
+  ApiCodeBuild:
+    Type: AWS::CodeBuild::Project
+    Properties:
+      Name: ${env:PROJECT_NAME}-api-${self:provider.stage}
+      ServiceRole: !GetAtt CodeBuildRole.Arn
+      Artifacts:
+        Type: CODEPIPELINE
+        Name: ApiUIProject
+      Environment:
+        ComputeType: BUILD_GENERAL1_SMALL
+        Type: LINUX_CONTAINER
+        Image: 'aws/codebuild/standard:4.0'
+        EnvironmentVariables:
+          - Name: REGION
+            Type: PLAINTEXT
+            Value: ${env:REGION}
+          - Name: PROJECT_NAME
+            Type: PLAINTEXT
+            Value: ${env:PROJECT_NAME}
+          - Name: AWS_SECRET_NAME
+            Type: PLAINTEXT
+            Value: ${env:AWS_SECRET_NAME}
+          - Name: STAGE
+            Type: PLAINTEXT
+            Value: ${self:provider.stage}
+      Source:
+        Type: CODEPIPELINE
+        BuildSpec: "./api/buildspec.yml"

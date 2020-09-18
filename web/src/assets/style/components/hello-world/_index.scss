@@ -1,0 +1,13 @@
+.hello-world-component {
+  text-align: center;
+  display: block;
+
+  svg {
+    max-width: 260px;
+  }
+
+  h1 {
+    color: $primaryColor;
+    font-size: 40px;
+  }
+}

@@ -1,0 +1,21 @@
+# package directories
+node_modules
+jspm_packages
+
+# Serverless directories
+.serverless
+
+# Webpack directories
+.webpack
+
+# code coverage
+.nyc_output
+.scannerwork
+coverage
+eslint-report.json
+
+
+.env
+.DS_Store
+.idea
+report.*.json

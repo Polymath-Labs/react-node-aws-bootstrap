@@ -1,0 +1,17 @@
+@mixin desktop {
+  @media #{$desktopBreakpoint} {
+    @content;
+  }
+}
+
+@mixin tablet {
+  @media #{$tabletBreakpoint} {
+    @content;
+  }
+}
+
+@mixin mobile {
+  @media #{$mobileBreakpoint} {
+    @content;
+  }
+}

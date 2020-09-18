@@ -1,0 +1,94 @@
+Resources:
+  AppVPC:
+    Type: AWS::EC2::VPC
+    Properties:
+      CidrBlock: 10.0.0.0/16
+      EnableDnsSupport: true
+      EnableDnsHostnames: false
+      InstanceTenancy: 'default'
+      Tags:
+        - Key: Name
+          Value: ${env:PROJECT_NAME}-vpc-${self:provider.stage}
+        - Key: Environment
+          Value: ${self:provider.stage}
+
+  Subnet1:
+    Type: AWS::EC2::Subnet
+    Properties:
+      AvailabilityZone: !Sub "${self:provider.region}a"
+      CidrBlock: "10.0.1.0/24"
+      VpcId: !Ref AppVPC
+      MapPublicIpOnLaunch: false
+
+  Subnet2:
+    Type: AWS::EC2::Subnet
+    Properties:
+      AvailabilityZone: !Sub "${self:provider.region}c"
+      CidrBlock: "10.0.3.0/24"
+      VpcId: !Ref AppVPC
+      MapPublicIpOnLaunch: false
+
+  Subnet3:
+    Type: AWS::EC2::Subnet
+    Properties:
+      AvailabilityZone: !Sub "${self:provider.region}b"
+      CidrBlock: "10.0.2.0/24"
+      VpcId: !Ref AppVPC
+      MapPublicIpOnLaunch: false
+
+  VPCSecurityGroup:
+    Type: AWS::EC2::SecurityGroup
+    Properties:
+      GroupDescription: "Security Group for ${env:PROJECT_NAME} cluster"
+      GroupName: ${env:PROJECT_NAME}-sg-group-${self:provider.stage}
+      Tags:
+        - Key: Name
+          Value: ${env:PROJECT_NAME}-sg-${self:provider.stage}
+        - Key: Environment
+          Value: ${self:provider.stage}
+      VpcId: !Ref AppVPC
+      SecurityGroupIngress:
+        - CidrIp: !GetAtt AppVPC.CidrBlock
+          Description: "accept traffic only from vpc"
+          IpProtocol: "-1"
+        - CidrIp: "10.10.0.0/16"
+          Description: "accept traffic only from vpc"
+          IpProtocol: "-1"
+        - CidrIp: "0.0.0.0/0"
+          IpProtocol: "-1"
+        - CidrIpv6: "::/0"
+          IpProtocol: "-1"
+      SecurityGroupEgress:
+        - CidrIp: "0.0.0.0/0"
+          Description: "Allow all egress traffic"
+          IpProtocol: "-1"
+        - CidrIpv6: "::/0"
+          Description: "Allow all egress IPv6 traffic"
+          IpProtocol: "-1"
+
+Outputs:
+  VPCID:
+    Value: !Ref AppVPC
+    Export:
+      Name: vpc-id-${self:provider.stage}
+
+  SubnetID1:
+    Value: !Ref Subnet1
+    Export:
+      Name: subnet1-id-${self:provider.stage}
+
+  SubnetID2:
+    Value: !Ref Subnet2
+    Export:
+      Name: subnet2-id-${self:provider.stage}
+
+  SubnetID3:
+    Value: !Ref Subnet3
+    Export:
+      Name: subnet3-id-${self:provider.stage}
+
+  SecurityGroupID:
+    Value: !Ref VPCSecurityGroup
+    Export:
+      Name: security-group-id-${self:provider.stage}
+

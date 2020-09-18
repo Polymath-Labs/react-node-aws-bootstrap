@@ -1,0 +1,27 @@
+/**
+ * @swagger
+ *
+ * definitions:
+ *   Create{{capitalize name}}Request:
+ *     type: object
+ */
+export interface Create{{capitalize name}}Request {
+}
+
+/**
+ * @swagger
+ *
+ * definitions:
+ *   Update{{capitalize name}}Request:
+ *     allOf:
+ *       - $ref: '#/definitions/Create{{capitalize name}}Request'
+ *       - properties:
+ *           version:
+ *             type: number
+ *             minimum: 1
+ *       - required:
+ *         - version
+ */
+export interface Update{{capitalize name}}Request extends Create{{capitalize name}}Request {
+	version: number;
+}

@@ -1,0 +1,12 @@
+.docs-page {
+  margin: 30px auto;
+  max-width: 600px;
+  display: block;
+  width: 100%;
+
+  @include mobile {
+    margin: 30px 15px;
+    max-width: none;
+    width: auto;
+  }
+}

@@ -1,0 +1,169 @@
+// @flow
+import { Router } from 'express';
+import {{name}}Service from '@services/{{name}}-service';
+import { GetRouteParam } from '@utils/router-helpers';
+import Logger from '@utils/logger';
+import ExceptionParser from '@exceptions/exception-parser';
+
+const router = new Router({ mergeParams: true });
+export const {{constantCase name}}_ID_ROUTE_PARAM = ':{{name}}ID';
+
+const logger = new Logger('{{capitalize name}}Router');
+
+/**
+ * @swagger
+ * /{{pluralize name}}:
+ *   get:
+ *     summary: Return list of {{capitalize (pluralize name)}}
+ *     tags:
+ *       - {{capitalize (pluralize name)}}
+ *     responses:
+ *       200:
+ *         description: List of {{capitalize (pluralize name)}}
+ *         schema:
+ *           type: array
+ *           items:
+ *             $ref: '#/definitions/{{capitalize name}}Model'
+ */
+router.get('/', async (request, response) => {
+	try {
+		const {{pluralize name}} = await {{name}}Service.fetch();
+		return response.json({{pluralize name}});
+	} catch (exception) {
+		logger.error('Failed to fetch {{capitalize (pluralize name)}}', exception);
+		return response.status(500).send();
+	}
+});
+
+/**
+ * @swagger
+ * /{{pluralize name}}:
+ *   post:
+ *     summary: Create a new {{capitalize name}}
+ *     tags:
+ *       - {{capitalize (pluralize name)}}
+ *     parameters:
+ *       - name: payload
+ *         description: {{capitalize name}} object
+ *         in: body
+ *         required: true
+ *         type: string
+ *         schema:
+ *           $ref: '#/definitions/Create{{capitalize name}}Request'
+ *     responses:
+ *       201:
+ *         description: Created {{capitalize name}}
+ *         schema:
+ *           $ref: '#/definitions/{{capitalize name}}Model'
+ */
+router.post('/', async (request, response) => {
+	try {
+		const {{name}} = await {{name}}Service.create(request.body);
+		return response.json({{name}});
+	} catch (exception) {
+		logger.error('Failed to create {{name}}', exception);
+		const error = ExceptionParser.toJson(exception);
+		return response.status(error.code).json(error);
+	}
+});
+
+/**
+ * @swagger
+ * /{{pluralize name}}/{{openCurlyBrace}}{{name}}ID}:
+ *   parameters:
+ *     - name: {{name}}ID
+ *       in: path
+ *       required: true
+ *       type: string
+ *   get:
+ *     summary: Return requested {{capitalize name}}
+ *     tags:
+ *       - {{capitalize (pluralize name)}}
+ *     responses:
+ *       200:
+ *         description: Requested {{capitalize name}}
+ *         schema:
+ *           $ref: '#/definitions/{{capitalize name}}Model'
+ */
+router.get(`/${{openCurlyBrace}}{{constantCase name}}_ID_ROUTE_PARAM}`, async (request, response) => {
+	try {
+		const {{name}} = await {{name}}Service.get(GetRouteParam(request.params, {{constantCase name}}_ID_ROUTE_PARAM));
+		return response.json({{name}});
+	} catch (exception) {
+		logger.error('Failed to get {{name}}', exception);
+		const error = ExceptionParser.toJson(exception);
+		return response.status(error.code).json(error);
+	}
+});
+
+
+/**
+ * @swagger
+ * /{{pluralize name}}/{{openCurlyBrace}}{{name}}ID}:
+ *   parameters:
+ *     - name: {{name}}ID
+ *       in: path
+ *       required: true
+ *       type: string
+ *   patch:
+ *     parameters:
+ *       - name: payload
+ *         description: {{capitalize name}} object
+ *         in: body
+ *         required: true
+ *         type: string
+ *         schema:
+ *           $ref: '#/definitions/Update{{capitalize name}}Request'
+ *     summary: Update {{capitalize name}}
+ *     tags:
+ *       - {{capitalize (pluralize name)}}
+ *     responses:
+ *       200:
+ *         description: Updated {{capitalize name}}
+ *         schema:
+ *           $ref: '#/definitions/{{capitalize name}}Model'
+ */
+router.patch(`/${{openCurlyBrace}}{{constantCase name}}_ID_ROUTE_PARAM}`, async (request, response) => {
+  try {
+		const {{name}} = await {{name}}Service.patch(
+			GetRouteParam(request.params, {{constantCase name}}_ID_ROUTE_PARAM),
+			request.body
+		);
+		return response.json( {{name}});
+  } catch (exception) {
+		logger.error('Failed to patch {{name}}', exception);
+		const error = ExceptionParser.toJson(exception);
+		return response.status(error.code).json(error);
+  }
+});
+
+/**
+ * @swagger
+ * /{{pluralize name}}/{{openCurlyBrace}}{{name}}ID}:
+ *   parameters:
+ *     - name: {{name}}ID
+ *       in: path
+ *       required: true
+ *       type: string
+ *   delete:
+ *     summary: Delete {{capitalize name}}
+ *     tags:
+ *       - {{capitalize (pluralize name)}}
+ *     responses:
+ *       204:
+ *         description: {{capitalize name}} deleted successfully
+ */
+router.delete(`/${{openCurlyBrace}}{{constantCase name}}_ID_ROUTE_PARAM}`, async (request, response) => {
+	try {
+		await {{name}}Service.delete(
+			GetRouteParam(request.params, {{constantCase name}}_ID_ROUTE_PARAM)
+		);
+		return response.status(204).send();
+	} catch (exception) {
+		logger.error('Failed to delete a {{name}}', exception);
+		const error = ExceptionParser.toJson(exception);
+		return response.status(error.code).json(error);
+	}
+});
+
+export default router;
