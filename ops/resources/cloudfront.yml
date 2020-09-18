@@ -5,7 +5,7 @@ Resources:
       DistributionConfig:
         Origins:
           -
-            DomainName: !GetAtt WebApp.DomainName
+            DomainName: !GetAtt WebApp.RegionalDomainName
             Id: !Ref WebApp
             CustomOriginConfig:
               HTTPPort: 80
