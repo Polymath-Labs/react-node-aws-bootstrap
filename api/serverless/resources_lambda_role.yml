@@ -2,7 +2,7 @@ Resources:
   LambdaRole:
     Type: AWS::IAM::Role
     Properties:
-      RoleName: apiRole${env:stage, 'dev'}
+      RoleName: apiRole${env:STAGE, 'dev'}
       AssumeRolePolicyDocument:
         Version: '2012-10-17'
         Statement:
