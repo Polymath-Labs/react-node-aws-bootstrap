@@ -70,7 +70,7 @@ custom:
   splitStacks:
     nestedStackCount: 20
     perFunction: true
-    perType: trues
+    perType: true
     perGroupFunction: true
 
 functions:
